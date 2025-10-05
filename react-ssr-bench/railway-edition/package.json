@@ -1,0 +1,14 @@
+{
+	"name": "react-ssr-railway-edition",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "bun run server.js",
+		"start": "bun run server.js"
+	},
+	"dependencies": {
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0"
+	}
+}
