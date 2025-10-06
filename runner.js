@@ -5,13 +5,14 @@ const tests = [
 		name: "next-js",
 		// cfUrl: "https://next-cf-bench.pinglabs.workers.dev/bench",
 		// vercelUrl: "https://vercel-edition-amber.vercel.app/bench",
-		railwayUrl: "https://next-bench-railway-edition.up.railway.app/bench",
+		// railwayUrl: "https://next-bench-railway-edition.up.railway.app/bench",
 	},
-	// {
-	//   name: "react-ssr-bench",
-	//   cfUrl: "https://react-ssr-cf.pinglabs.workers.dev/bench",
-	//   vercelUrl: "https://react-ssr-bench-v2.vercel.app/api/bench",
-	// },
+	{
+		name: "react-ssr-bench",
+		// cfUrl: "https://react-ssr-cf.pinglabs.workers.dev/bench",
+		// vercelUrl: "https://react-ssr-bench-v2.vercel.app/api/bench",
+		railwayUrl: "https://react-ssr-bench-railway-edition.up.railway.app/bench",
+	},
 	// {
 	//   name: "sveltekit",
 	//   cfUrl: "https://cf-sveltekit-bench.pinglabs.workers.dev/",
