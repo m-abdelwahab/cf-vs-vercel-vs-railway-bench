@@ -5,7 +5,7 @@ const tests = [
 		name: "next-js",
 		// cfUrl: "https://next-cf-bench.pinglabs.workers.dev/bench",
 		// vercelUrl: "https://vercel-edition-amber.vercel.app/bench",
-		// railwayUrl: "https://next-bench-railway-edition.up.railway.app/bench",
+		railwayUrl: "https://next-bench-railway-edition.up.railway.app/bench",
 	},
 	{
 		name: "react-ssr-bench",
@@ -18,21 +18,27 @@ const tests = [
 	//   cfUrl: "https://cf-sveltekit-bench.pinglabs.workers.dev/",
 	//   vercelUrl: "https://vercel-svelte-bench.vercel.app",
 	// },
-	// {
-	//   name: "shitty-sine-bench",
-	//   cfUrl: "https://vanilla-ssr-cf.pinglabs.workers.dev/shitty-sine-bench",
-	//   vercelUrl: "https://vanilla-bench-v2.vercel.app/api/shitty-sine-bench",
-	// },
-	// {
-	//   name: "realistic-math-bench",
-	//   cfUrl: "https://vanilla-ssr-cf.pinglabs.workers.dev/realistic-math-bench",
-	//   vercelUrl: "https://vanilla-bench-v2.vercel.app/api/realistic-math-bench",
-	// },
-	// {
-	//   name: "vanilla-slower",
-	//   cfUrl: "https://vanilla-ssr-cf.pinglabs.workers.dev/slower-bench",
-	//   vercelUrl: "https://vanilla-bench-v2.vercel.app/api/slower-bench",
-	// },
+	{
+		name: "shitty-sine-bench",
+		// cfUrl: "https://vanilla-ssr-cf.pinglabs.workers.dev/shitty-sine-bench",
+		// vercelUrl: "https://vanilla-bench-v2.vercel.app/api/shitty-sine-bench",
+		railwayUrl:
+			"https://vanilla-bench-railway-edition.up.railway.app/shitty-sine-bench",
+	},
+	{
+		name: "realistic-math-bench",
+		// cfUrl: "https://vanilla-ssr-cf.pinglabs.workers.dev/realistic-math-bench",
+		// vercelUrl: "https://vanilla-bench-v2.vercel.app/api/realistic-math-bench",
+		railwayUrl:
+			"https://vanilla-bench-railway-edition.up.railway.app/realistic-math-bench",
+	},
+	{
+		name: "vanilla-slower",
+		// cfUrl: "https://vanilla-ssr-cf.pinglabs.workers.dev/slower-bench",
+		// vercelUrl: "https://vanilla-bench-v2.vercel.app/api/slower-bench",
+		railwayUrl:
+			"https://vanilla-bench-railway-edition.up.railway.app/slower-bench",
+	},
 ];
 
 const fs = require("fs");
