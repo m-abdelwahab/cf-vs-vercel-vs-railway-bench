@@ -13,11 +13,12 @@ const tests = [
 		// vercelUrl: "https://react-ssr-bench-v2.vercel.app/api/bench",
 		railwayUrl: "https://react-ssr-bench-railway-edition.up.railway.app/bench",
 	},
-	// {
-	//   name: "sveltekit",
-	//   cfUrl: "https://cf-sveltekit-bench.pinglabs.workers.dev/",
-	//   vercelUrl: "https://vercel-svelte-bench.vercel.app",
-	// },
+	{
+		name: "sveltekit",
+		// cfUrl: "https://cf-sveltekit-bench.pinglabs.workers.dev/",
+		// vercelUrl: "https://vercel-svelte-bench.vercel.app",
+		railwayUrl: "https://sveltekit-bench-railway-edition.up.railway.app",
+	},
 	{
 		name: "shitty-sine-bench",
 		// cfUrl: "https://vanilla-ssr-cf.pinglabs.workers.dev/shitty-sine-bench",
@@ -167,14 +168,12 @@ async function main() {
 		console.log(`Test: ${test.name}`);
 		console.log("-".repeat(60));
 
-		const cfResults = await runBenchmark(
-			test.cfUrl,
-			`${test.name} - Cloudflare`,
-		);
-		const vercelResults = await runBenchmark(
-			test.vercelUrl,
-			`${test.name} - Vercel`,
-		);
+		const cfResults = test.cfUrl
+			? await runBenchmark(test.cfUrl, `${test.name} - Cloudflare`)
+			: null;
+		const vercelResults = test.vercelUrl
+			? await runBenchmark(test.vercelUrl, `${test.name} - Vercel`)
+			: null;
 		const railwayResults = test.railwayUrl
 			? await runBenchmark(test.railwayUrl, `${test.name} - Railway`)
 			: null;
@@ -241,43 +240,30 @@ async function main() {
 			console.log(`  Mean: ${formatTime(railwayResults.mean)}`);
 		}
 
-		// Comparison section
-		const validResults = [
-			{ name: "Cloudflare", results: cfResults },
-			{ name: "Vercel", results: vercelResults },
-			{ name: "Railway", results: railwayResults },
-		].filter((r) => r.results);
+		// Comparison logic
+		const providers = [];
+		if (cfResults) providers.push({ name: "Cloudflare", results: cfResults });
+		if (vercelResults)
+			providers.push({ name: "Vercel", results: vercelResults });
+		if (railwayResults)
+			providers.push({ name: "Railway", results: railwayResults });
 
-		if (validResults.length >= 2) {
+		if (providers.length >= 2) {
 			console.log("\n📈 Comparison:");
-
-			// Find fastest and slowest
-			validResults.sort((a, b) => a.results.mean - b.results.mean);
-			const fastest = validResults[0];
-			const slowest = validResults[validResults.length - 1];
-
-			console.log(
-				`  Fastest: ${fastest.name} (${formatTime(fastest.results.mean)})`,
+			// Sort by mean response time (fastest first)
+			const sorted = [...providers].sort(
+				(a, b) => a.results.mean - b.results.mean,
 			);
+			const fastest = sorted[0];
 			console.log(
-				`  Slowest: ${slowest.name} (${formatTime(slowest.results.mean)})`,
+				`  Fastest: ${fastest.name} (${formatTime(fastest.results.mean)} mean)`,
 			);
 
-			// Speed comparison
-			const speedup = slowest.results.mean / fastest.results.mean;
-			console.log(
-				`  ${fastest.name} is ${speedup.toFixed(2)}x faster than ${slowest.name}`,
-			);
-
-			// Show all comparisons if we have 3 platforms
-			if (validResults.length === 3) {
-				console.log(`\n  All platforms by speed:`);
-				validResults.forEach((r, i) => {
-					const relativeSpeed = r.results.mean / fastest.results.mean;
-					console.log(
-						`    ${i + 1}. ${r.name}: ${formatTime(r.results.mean)} (${relativeSpeed.toFixed(2)}x)`,
-					);
-				});
+			for (let i = 1; i < sorted.length; i++) {
+				const ratio = sorted[i].results.mean / fastest.results.mean;
+				console.log(
+					`  ${sorted[i].name} is ${ratio.toFixed(2)}x slower than ${fastest.name}`,
+				);
 			}
 		}
 
@@ -311,47 +297,40 @@ async function main() {
 		console.log(`## ${result.name}`);
 		console.log();
 
-		const validPlatforms = [
-			{ name: "Cloudflare", data: cf },
-			{ name: "Vercel", data: vercel },
-			{ name: "Railway", data: railway },
-		].filter((p) => p.data);
+		const providers = [];
+		if (cf) providers.push({ name: "Cloudflare", results: cf });
+		if (vercel) providers.push({ name: "Vercel", results: vercel });
+		if (railway) providers.push({ name: "Railway", results: railway });
 
-		if (validPlatforms.length >= 2) {
-			// Sort by mean to find winner
-			validPlatforms.sort((a, b) => a.data.mean - b.data.mean);
-			const winner = validPlatforms[0];
-			const slowest = validPlatforms[validPlatforms.length - 1];
-			const speedup = slowest.data.mean / winner.data.mean;
-
+		if (providers.length > 0) {
+			// Create table header
 			console.log(`| Platform   | Mean | Min | Max | Variability |`);
 			console.log(`|------------|------|-----|-----|-------------|`);
 
-			// Display all platforms (sorted by speed in final output)
-			if (cf) {
-				const cfVariability = cf.max - cf.min;
+			// Add rows for each provider
+			for (const provider of providers) {
+				const r = provider.results;
+				const variability = r.max - r.min;
+				const paddedName = provider.name.padEnd(10);
 				console.log(
-					`| Cloudflare | ${formatTime(cf.mean)} | ${formatTime(cf.min)} | ${formatTime(cf.max)} | ${formatTime(cfVariability)} |`,
+					`| ${paddedName} | ${formatTime(r.mean)} | ${formatTime(r.min)} | ${formatTime(r.max)} | ${formatTime(variability)} |`,
 				);
 			}
-			if (vercel) {
-				const vercelVariability = vercel.max - vercel.min;
-				console.log(
-					`| Vercel     | ${formatTime(vercel.mean)} | ${formatTime(vercel.min)} | ${formatTime(vercel.max)} | ${formatTime(vercelVariability)} |`,
-				);
-			}
-			if (railway) {
-				const railwayVariability = railway.max - railway.min;
-				console.log(
-					`| Railway    | ${formatTime(railway.mean)} | ${formatTime(railway.min)} | ${formatTime(railway.max)} | ${formatTime(railwayVariability)} |`,
-				);
-			}
+			console.log();
 
-			console.log();
-			console.log(
-				`**Winner:** ${winner.name} (${speedup.toFixed(2)}x faster than ${slowest.name})`,
-			);
-			console.log();
+			// Determine winner
+			if (providers.length >= 2) {
+				const sorted = [...providers].sort(
+					(a, b) => a.results.mean - b.results.mean,
+				);
+				const winner = sorted[0];
+				const secondPlace = sorted[1];
+				const speedup = secondPlace.results.mean / winner.results.mean;
+				console.log(
+					`**Winner:** ${winner.name} (${speedup.toFixed(2)}x faster than ${secondPlace.name})`,
+				);
+				console.log();
+			}
 		}
 	}
 
